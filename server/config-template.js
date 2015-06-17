@@ -5,5 +5,8 @@ module.exports = {
   mongo: {
     hostName: 'localhost',
     dataset: 'innoRest'
-  }
+  },
+  session: {
+    name: 'rest.sid.8080'
+  },
 }

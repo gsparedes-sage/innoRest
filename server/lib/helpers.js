@@ -36,3 +36,22 @@ exports.checkUser = function(username, password, callback) {
 		}
 	});
 };
+
+exports.parseAuth = function(req) {
+	var credentials = /^basic\s([\w\+\/]+\=*)/i.exec(req.headers.authorization);
+    if (!(credentials && credentials[1]))
+      throw new Error("authorization header invalid");
+
+    var usrpwd = new Buffer(credentials[1], "base64");
+    usrpwd = usrpwd.toString("utf8");
+    var index = usrpwd.indexOf(':');
+    if (index < 0)
+      throw Error("Improper formatting");
+
+    var login = usrpwd.substr(0, index);
+    var pass = usrpwd.substr(index + 1);
+    return {
+    	login: login,
+    	pass: pass
+    };
+}

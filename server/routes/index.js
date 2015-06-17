@@ -5,9 +5,9 @@
   var router = express.Router();
   var config = require('../config');
   var helpers = require('../lib/helpers');
-  var jwt = require('jsonwebtoken');
+  var sessionManager = require('../lib/session');
 
-  router.get('/', function(req, res) {
+  router.get('/', ensureSession, function(req, res) {
     var db = helpers.initializeMongoDB();
     var sites = db.collection('Site');
     sites.find().sort({site:1}, function(err, docs) {
@@ -15,34 +15,25 @@
     });
   });
 
-  router.post('/authenticate', function(req, res) {
-    var credentials = /^basic\s([\w\+\/]+\=*)/i.exec(req.headers.authorization);
-    if (!(credentials && credentials[1]))
-      throw new Error("authorization header invalid");
+  router.post('/authenticate', ensureSession, function(req, res) {
+    var authData = helpers.parseAuth(req);
 
-    var usrpwd = new Buffer(credentials[1], "base64");
-    usrpwd = usrpwd.toString("utf8");
-    var index = usrpwd.indexOf(':');
-    if (index < 0)
-      throw Error("Improper formatting");
-
-    var login = usrpwd.substr(0, index);
-    var pass = usrpwd.substr(index + 1);
-
-    helpers.checkUser(login, pass, function(user) {
-      var authData = {};
+    helpers.checkUser(authData.login, authData.pass, function(user) {
       if (user) {
-        /*var token = jwt.sign(user, config.secret, {
-          expiresInMinutes: 1440 // expires in 24 hours
-        });
-        authData.token = token;*/
-        authData.username = user.username;
-        authData.success = true;
+        res.locals.authorization = req.headers.authorization;
+        req.session.username = user.username;
+        req.session.success = true;
       } else
-        authData.success = false;
-      res.json(authData);
+        req.session.success = false;
+      res.json(req.session.success);
     });
   });
+
+  function ensureSession(req, res, next) {
+    sessionManager.checkSession(req, res);
+    sessionManager.setSessionCookie(req, res);
+    next();
+  }
 
   module.exports = router;
 
