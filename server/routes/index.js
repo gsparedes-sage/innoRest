@@ -21,41 +21,10 @@
     });
   });
 
-  router.get('/workCenters/:id', ensureSession, function(req, res) {
-    var id = req.params.id;
+  router.get('/workOrdersByWorkCenter/:name', ensureSession, function(req, res) {
+    var name = req.params.name;
     console.log(id)
-    helpers.getWorkCenter(id, function(workCenter) {
-      if (workCenter)
-        res.json(workCenter);
-      else
-        res.json('No entries found.');
-    });
-  });
-
-  router.post('/workCenters', ensureSession, function(req, res) {
-    helpers.createWorkCenter(req.body, function(workCenter) {
-      if (workCenter)
-        res.json("Success");
-      else
-        res.json('Failure');
-    });
-  });
-
-  router.get('/workOrders/:id', ensureSession, function(req, res) {
-    var id = req.params.id;
-    console.log(id)
-    helpers.getWorkOrder(id, function(workOrder) {
-      if (workOrder)
-        res.json(workOrder);
-      else
-        res.json('No entries found.');
-    });
-  });
-
-  router.get('/workOrdersByWorkCenter/:id', ensureSession, function(req, res) {
-    var id = req.params.id;
-    console.log(id)
-    helpers.getWorkOrders(id, function(workOrders) {
+    helpers.getWorkOrders(name, function(workOrders) {
       if (workOrders)
         res.json(workOrders);
       else
@@ -72,38 +41,27 @@
     });
   });
 
-  router.get('/stepsByWorkOrder/:id', ensureSession, function(req, res) {
+  router.get('/productsByWorkOrder/:id', ensureSession, function(req, res) {
     var id = req.params.id;
     console.log(id)
-    helpers.getSteps(id, function(steps) {
-      if (steps)
-        res.json(steps);
+    helpers.getProducts(id, function(products) {
+      if (products)
+        res.json(products);
       else
         res.json('No entries found.');
     });
   });
 
-  router.get('/steps/:id', ensureSession, function(req, res) {
-    var id = req.params.id;
-    console.log(id)
-    helpers.getWorkOrder(id, function(workOrder) {
-      if (workOrder)
-        res.json(workOrder);
-      else
-        res.json('No entries found.');
-    });
-  });
-
-  router.post('/steps', ensureSession, function(req, res) {
-    helpers.createStep(req.body, function(step) {
-      if (step)
+  router.post('/products', ensureSession, function(req, res) {
+    helpers.createProduct(req.body, function(product) {
+      if (product)
         res.json("Success");
       else
         res.json('Failure');
     });
   });
 
-  router.get('/contentByStep/:id', ensureSession, function(req, res) {
+  router.get('/contentByProduct/:id', ensureSession, function(req, res) {
     var id = req.params.id;
     console.log(id)
     helpers.getContent(id, function(content) {

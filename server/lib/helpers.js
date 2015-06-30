@@ -57,48 +57,15 @@ exports.parseAuth = function(req) {
     };
 };
 
-exports.getWorkCenter = function(id, callback) {
+exports.getWorkOrders = function(name, callback) {
 	var db = initializeMongoDB();
-	var workCenters = db.collection('WorkCenters');
-	workCenters.findOne({_id: id}, function(err, workCenter) {
-		db.close();
-		if (workCenter)
-			callback(workCenter);
-		else
-			callback();
-	});
-};
-
-exports.createWorkCenter = function(doc, callback) {
-	var db = initializeMongoDB();
-	var workCenters = db.collection('WorkCenters');
-	doc._id = uuid.generate();
-	console.log(doc)
-	workCenters.insert(doc, function(err, workCenter) {
-		db.close();
-		if (workCenter)
-			callback(workCenter);
-		else
-			callback();
-	});
-};
-
-exports.getWorkOrder = function(id, callback) {
-	var db = initializeMongoDB();
-	var workOrders = db.collection('WorkOrders');
-	workOrders.findOne({_id: id}, function(err, workOrder) {
-		db.close();
-		if (workOrder)
-			callback(workOrder);
-		else
-			callback();
-	});
-};
-
-exports.getWorkOrders = function(id, callback) {
-	var db = initializeMongoDB();
-	var workOrdersTable = db.collection('WorkOrders');
-	workOrdersTable.find({workCenterId: id}, function(err, workOrders) {
+	var workOrdersTable = db.collection('workorders');
+	var filter = {};
+	filter['WorkCenter'] = {
+		"$regex": name,
+		"$options": "i"
+	};
+	workOrdersTable.find(filter, function(err, workOrders) {
 		db.close();
 		if (workOrders.length > 0)
 			callback(workOrders);
@@ -109,9 +76,7 @@ exports.getWorkOrders = function(id, callback) {
 
 exports.createWorkOrder = function(doc, callback) {
 	var db = initializeMongoDB();
-	var workOrders = db.collection('WorkOrders');
-	doc._id = uuid.generate();
-	console.log(doc)
+	var workOrders = db.collection('workorders');
 	workOrders.insert(doc, function(err, workOrder) {
 		db.close();
 		if (workOrder)
@@ -121,39 +86,37 @@ exports.createWorkOrder = function(doc, callback) {
 	});
 };
 
-exports.getSteps = function(id, callback) {
+exports.getProducts = function(id, callback) {
 	var db = initializeMongoDB();
-	var stepsTable = db.collection('Steps');
-	stepsTable.find({workOrderId: id}, function(err, steps) {
+	var productsTable = db.collection('workordercomponents');
+	productsTable.find({WorkOrder: id}, function(err, products) {
 		db.close();
-		if (steps.length > 0)
-			callback(steps);
+		if (products.length > 0)
+			callback(products);
 		else
 			callback();
 	});
 };
 
-exports.getStep = function(id, callback) {
+exports.getProduct = function(id, callback) {
 	var db = initializeMongoDB();
-	var stepsTable = db.collection('Steps');
-	stepsTable.findOne({_id: id}, function(err, step) {
+	var productsTable = db.collection('workordercomponents');
+	productsTable.findOne({_id: mongojs.ObjectId(id)}, function(err, product) {
 		db.close();
-		if (step)
-			callback(step);
+		if (product)
+			callback(product);
 		else
 			callback();
 	});
 };
 
-exports.createStep = function(doc, callback) {
+exports.createProduct = function(doc, callback) {
 	var db = initializeMongoDB();
-	var stepsTable = db.collection('Steps');
-	doc._id = uuid.generate();
-	console.log(doc)
-	stepsTable.insert(doc, function(err, step) {
+	var productsTable = db.collection('workordercomponents');
+	productsTable.insert(doc, function(err, product) {
 		db.close();
-		if (step)
-			callback(step);
+		if (product)
+			callback(product);
 		else
 			callback();
 	});
@@ -161,8 +124,8 @@ exports.createStep = function(doc, callback) {
 
 exports.getContent = function(id, callback) {
 	var db = initializeMongoDB();
-	var contentTable = db.collection('Content');
-	contentTable.findOne({stepId: id}, function(err, content) {
+	var contentTable = db.collection('Products');
+	contentTable.findOne({_id: mongojs.ObjectId(id)}, function(err, content) {
 		db.close();
 		if (content)
 			callback(content);
@@ -173,9 +136,7 @@ exports.getContent = function(id, callback) {
 
 exports.createContent = function(doc, callback) {
 	var db = initializeMongoDB();
-	var contentTable = db.collection('Content');
-	doc._id = uuid.generate();
-	console.log(doc)
+	var contentTable = db.collection('Products');
 	contentTable.insert(doc, function(err, content) {
 		db.close();
 		if (content)
