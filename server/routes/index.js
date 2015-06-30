@@ -81,6 +81,11 @@
     });
   });
 
+  router.get('/checkit', function(req, res) {
+    res.sendStatus(200);
+    res.end();
+  }); 
+
   function ensureSession(req, res, next) {
     sessionManager.checkSession(req, res);
     sessionManager.setSessionCookie(req, res);
