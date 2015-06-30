@@ -86,10 +86,10 @@ exports.createWorkOrder = function(doc, callback) {
 	});
 };
 
-exports.getProducts = function(id, callback) {
+exports.getProducts = function(id, op, callback) {
 	var db = initializeMongoDB();
 	var productsTable = db.collection('workordercomponents');
-	productsTable.find({WorkOrder: id}, function(err, products) {
+	productsTable.find({WorkOrder: id, Operation: op}, function(err, products) {
 		db.close();
 		if (products.length > 0)
 			callback(products);
