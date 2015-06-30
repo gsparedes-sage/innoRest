@@ -6,6 +6,7 @@
   var config = require('../config');
   var helpers = require('../lib/helpers');
   var sessionManager = require('../lib/session');
+  var async = require('async');
 
   router.post('/authenticate', ensureSession, function(req, res) {
     var authData = helpers.parseAuth(req);
@@ -23,13 +24,44 @@
 
   router.get('/workOrdersByWorkCenter/:name', ensureSession, function(req, res) {
     var name = req.params.name;
-    console.log(id)
-    helpers.getWorkOrders(name, function(workOrders) {
-      if (workOrders)
-        res.json(workOrders);
-      else
+    console.log(name)
+
+    async.waterfall([
+        function(callback) {
+          helpers.getWorkOrders(name, function(workOrders) {
+            if (workOrders) {
+              callback(null, workOrders)
+            } else
+              res.json('No entries found.');
+          });
+        },
+        function(listOfWorkOrders, callback) {
+          async.forEachOfSeries(listOfWorkOrders, function (workOrder, key, cb) {
+            console.log("WORK ORDER: ", workOrder)
+            helpers.getUniqueProduct(workOrder.WorkOrder, workOrder.Operation, workOrder.Product, function(product) {
+              console.log("PRODUCT: ", product)
+              if (product) {
+                workOrder["Quantity"] = product["Quantity"];
+                workOrder["UOM"] = product["UOM"];
+                workOrder["BOMSequence"] = product["BOMSequence"];
+              } else {
+                workOrder["Quantity"] = '';
+                workOrder["UOM"] = '';
+                workOrder["BOMSequence"] = '';
+              }
+              cb();
+            });
+          }, function(err) {
+            callback(null, [listOfWorkOrders]);
+          });
+        }
+    ], function (err, result) {
+      if (result[0]) {
+        res.json(result[0]);
+      } else
         res.json('No entries found.');
     });
+
   });
 
   router.post('/workOrders', ensureSession, function(req, res) {

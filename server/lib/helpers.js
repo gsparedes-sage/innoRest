@@ -110,6 +110,18 @@ exports.getProduct = function(id, callback) {
 	});
 };
 
+exports.getUniqueProduct = function(workOrder, operation, product, callback) {
+	var db = initializeMongoDB();
+	var productsTable = db.collection('workordercomponents');
+	productsTable.findOne({WorkOrder: workOrder, Product: product, Operation: operation}, function(err, product) {
+		db.close();
+		if (product)
+			callback(product);
+		else
+			callback();
+	});
+};
+
 exports.createProduct = function(doc, callback) {
 	var db = initializeMongoDB();
 	var productsTable = db.collection('workordercomponents');
