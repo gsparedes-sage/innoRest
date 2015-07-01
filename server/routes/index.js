@@ -14,6 +14,19 @@
     res.render('insert');
   });
 
+  router.get("/images/:id", function(req,res) {
+    var id = req.params.id;
+
+    helpers.getComponentImage(id, function(component) {
+      console.log(component)
+      if (component) {
+        res.set("Content-Type", component.img.contentType);
+        res.send(component.img.data);
+      } else
+        res.send('');
+    });      
+  });
+
   router.post('/authenticate', ensureSession, function(req, res) {
     var authData = helpers.parseAuth(req);
 

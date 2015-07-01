@@ -98,7 +98,7 @@ exports.createWorkOrder = function(doc, callback) {
 	});
 };
 
-exports.getProducts = function(id, op, callback) {
+exports.getComponents = function(id, op, callback) {
 	var db = initializeMongoDB();
 	var productsTable = db.collection('workordercomponents');
 	productsTable.find({WorkOrder: id, Operation: op}, function(err, products) {
@@ -145,6 +145,18 @@ exports.createComponent = function(doc, callback) {
 			callback();
 	});
 };
+
+exports.getComponentImage = function(id, callback) {
+	var db = initializeMongoDB();
+	var componentsTable = db.collection('workordercomponents');
+	componentsTable.findOne({_id: mongojs.ObjectId(id)}, function(err, component) {
+		db.close();
+		if (component)
+			callback(component);
+		else
+			callback();	  	
+	});
+}
 
 exports.getContent = function(id, callback) {
 	var db = initializeMongoDB();
