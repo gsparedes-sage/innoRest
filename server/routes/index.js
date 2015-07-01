@@ -4,6 +4,7 @@
   var express = require('express');
   var router = express.Router();
   var config = require('../config');
+  var fs = require('fs');
   var helpers = require('../lib/helpers');
   var sessionManager = require('../lib/session');
   var multipart = require('connect-multiparty');
@@ -69,6 +70,16 @@
   });
 
   router.post('/components', multipartMiddleware, ensureSession, function(req, res) {
+    req.body.img = {};
+    if (req.files.image) {
+      req.body.img.data = fs.readFileSync(req.files.image.path);
+      req.body.img.contentType = req.files.image.headers["content-type"];
+      req.body.img.name = req.files.image.originalFilename;
+    } else {
+      req.body.img.data = '';
+      req.body.img.contentType = '';
+      req.body.img.name = '';
+    }
     console.log(req.body)
     helpers.createComponent(req.body, function(component) {
       if (component)
