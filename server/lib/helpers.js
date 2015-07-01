@@ -74,6 +74,18 @@ exports.getWorkOrders = function(name, callback) {
 	});
 };
 
+exports.getWorkOrderByOperation = function(id, op, callback) {
+	var db = initializeMongoDB();
+	var workOrdersTable = db.collection('workorders');
+	workOrdersTable.findOne({WorkOrder: id, Operation: op}, function(err, workOrder) {
+		db.close();
+		if (workOrder)
+			callback(workOrder);
+		else
+			callback();
+	});
+};
+
 exports.createWorkOrder = function(doc, callback) {
 	var db = initializeMongoDB();
 	var workOrders = db.collection('workorders');
@@ -98,37 +110,37 @@ exports.getProducts = function(id, op, callback) {
 	});
 };
 
-exports.getProduct = function(id, callback) {
+exports.getComponent = function(id, callback) {
 	var db = initializeMongoDB();
-	var productsTable = db.collection('workordercomponents');
-	productsTable.findOne({_id: mongojs.ObjectId(id)}, function(err, product) {
+	var componentsTable = db.collection('workordercomponents');
+	componentsTable.findOne({_id: mongojs.ObjectId(id)}, function(err, component) {
 		db.close();
-		if (product)
-			callback(product);
+		if (component)
+			callback(component);
 		else
 			callback();
 	});
 };
 
-exports.getUniqueProduct = function(workOrder, operation, product, callback) {
+exports.getUniqueComponent = function(workOrder, operation, product, callback) {
 	var db = initializeMongoDB();
-	var productsTable = db.collection('workordercomponents');
-	productsTable.findOne({WorkOrder: workOrder, Product: product, Operation: operation}, function(err, product) {
+	var componentsTable = db.collection('workordercomponents');
+	componentsTable.findOne({WorkOrder: workOrder, Product: product, Operation: operation}, function(err, component) {
 		db.close();
-		if (product)
-			callback(product);
+		if (component)
+			callback(component);
 		else
 			callback();
 	});
 };
 
-exports.createProduct = function(doc, callback) {
+exports.createComponent = function(doc, callback) {
 	var db = initializeMongoDB();
-	var productsTable = db.collection('workordercomponents');
-	productsTable.insert(doc, function(err, product) {
+	var componentsTable = db.collection('workordercomponents');
+	componentsTable.insert(doc, function(err, component) {
 		db.close();
-		if (product)
-			callback(product);
+		if (component)
+			callback(component);
 		else
 			callback();
 	});

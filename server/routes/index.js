@@ -6,6 +6,12 @@
   var config = require('../config');
   var helpers = require('../lib/helpers');
   var sessionManager = require('../lib/session');
+  var multipart = require('connect-multiparty');
+  var multipartMiddleware = multipart();
+
+  router.get('/insertComponent', function (req, res) {
+    res.render('insert');
+  });
 
   router.post('/authenticate', ensureSession, function(req, res) {
     var authData = helpers.parseAuth(req);
@@ -31,6 +37,17 @@
     });
   });
 
+  router.get('/workOrdersByOperation/:id/:operation', ensureSession, function(req, res) {
+    var id = req.params.id;
+    var op = req.params.operation;
+    helpers.getWorkOrderByOperation(id, op, function(workOrder) {
+      if (workOrder)
+        res.json(workOrder);
+      else
+        res.json('No entries found.');
+    });
+  });
+
   router.post('/workOrders', ensureSession, function(req, res) {
     helpers.createWorkOrder(req.body, function(workOrder) {
       if (workOrder)
@@ -40,28 +57,28 @@
     });
   });
 
-  router.get('/productsByWorkOrder/:id/:operation', ensureSession, function(req, res) {
+  router.get('/componentsByWorkOrder/:id/:operation', ensureSession, function(req, res) {
     var id = req.params.id;
     var op = req.params.operation;
-    console.log(id, op)
-    helpers.getProducts(id, op, function(products) {
-      if (products)
-        res.json(products);
+    helpers.getComponents(id, op, function(components) {
+      if (components)
+        res.json(components);
       else
         res.json('No entries found.');
     });
   });
 
-  router.post('/products', ensureSession, function(req, res) {
-    helpers.createProduct(req.body, function(product) {
-      if (product)
+  router.post('/components', multipartMiddleware, ensureSession, function(req, res) {
+    console.log(req.body)
+    helpers.createComponent(req.body, function(component) {
+      if (component)
         res.json("Success");
       else
         res.json('Failure');
     });
   });
 
-  router.get('/contentByProduct/:id', ensureSession, function(req, res) {
+  router.get('/contentByComponent/:id', ensureSession, function(req, res) {
     var id = req.params.id;
     console.log(id)
     helpers.getContent(id, function(content) {
