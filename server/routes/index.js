@@ -20,10 +20,10 @@
     helpers.getComponentImage(id, function(component) {
       console.log(component)
       if (component) {
-        res.set("Content-Type", component.img.contentType);
-        res.send(component.img.data);
+        res.writeHead(200, {"Content-Type": component.img.contentType});
+        res.end(component.img.data.buffer, 'binary');
       } else
-        res.send('');
+        res.end();
     });      
   });
 
