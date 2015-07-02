@@ -146,6 +146,18 @@ exports.createComponent = function(doc, callback) {
 	});
 };
 
+exports.updateComponent = function(id, doc, callback) {
+	var db = initializeMongoDB();
+	var componentsTable = db.collection('workordercomponents');
+	componentsTable.findAndModify({query: {_id: mongojs.ObjectId(id)}, update: {$set: {img: doc.img}}, new: true}, function(err, component) {
+		db.close();
+		if (component)
+			callback(component);
+		else
+			callback();
+	});
+};
+
 exports.getComponentImage = function(id, callback) {
 	var db = initializeMongoDB();
 	var componentsTable = db.collection('workordercomponents');

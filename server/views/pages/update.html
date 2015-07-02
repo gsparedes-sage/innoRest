@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<style type="text/css">
+		body {
+			width: 500px;
+		}
+
+		.f-left {
+			float:left;
+		}
+
+		.wrap {
+			width: 100%;
+			padding-bottom:  10px;
+		}
+
+		.btn {
+			padding-bottom: 30px;
+		}
+
+		.row {
+			width: 100%;
+		}
+
+		.title {
+			font-size: 14px;
+			font-weight: bold;
+			padding-right: 10px;
+		}
+
+		.header {
+			font-size: 18px;
+			font-weight:bold;
+			padding-bottom: 20px;
+		}
+	</style>
+</head>
+<body>
+<div class="header">Please enter all necessary information: </div>
+ 	<form action="/updateComponent" method="POST" enctype="multipart/form-data">
+	 	<div class="f-left wrap">
+			<div class="f-left title">ID:</div> 
+			<div class="f-left"><input type="text" name="id" /></div>
+		</div>
+		<div class="f-left wrap">
+			<div class="f-left title">Image:</div>
+			<div class="f-left"><input type="file" name="image" /></div>
+		</div>
+		<div class="f-left">
+			<input type="submit" value="Submit">
+		</div>
+	</form>
+</body>
+</html>

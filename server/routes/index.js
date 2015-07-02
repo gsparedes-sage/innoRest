@@ -14,6 +14,10 @@
     res.render('insert');
   });
 
+  router.get('/updateComponent', function (req, res) {
+    res.render('update');
+  });
+
   router.get("/images/:id", function(req,res) {
     var id = req.params.id;
 
@@ -95,6 +99,26 @@
     }
     console.log(req.body)
     helpers.createComponent(req.body, function(component) {
+      if (component)
+        res.json("Success");
+      else
+        res.json('Failure');
+    });
+  });
+
+  router.post('/updateComponent', multipartMiddleware, ensureSession, function(req, res) {
+    req.body.img = {};
+    if (req.files.image) {
+      req.body.img.data = fs.readFileSync(req.files.image.path);
+      req.body.img.contentType = req.files.image.headers["content-type"];
+      req.body.img.name = req.files.image.originalFilename;
+    } else {
+      req.body.img.data = '';
+      req.body.img.contentType = '';
+      req.body.img.name = '';
+    }
+    console.log(req.body)
+    helpers.updateComponent(req.body.id, req.body, function(component) {
       if (component)
         res.json("Success");
       else
